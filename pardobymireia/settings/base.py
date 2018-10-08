@@ -31,7 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = ['pardobymireia-ecommerce-be-mboladop.c9users.io', 'mboladop-mireia-ecommerce.herokuapp.com','127.0.0.1' ]
+ALLOWED_HOSTS = ['pardobymireia-ecommerce-be-mboladop.c9users.io', 'mboladop-pardo-by-mireia-pardo.herokuapp.com','127.0.0.1' ]
 
 
 # Application definition
