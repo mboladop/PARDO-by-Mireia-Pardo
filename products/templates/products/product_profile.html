@@ -11,13 +11,36 @@
                 <h4><strong>{{product.name}}</strong></h4><br><br>
                 <p>{{product.description}}</p>
                 <br>
-                <a target="_blank" href="{% static 'files/cuidado.pdf' %}"><strong>Cuidados</strong></a> |
-                <a target="_blank" href="{% static 'files/tallas.pdf' %}"><strong>Guia de tallas</strong></a><br>
-                <form class='form_addtocart' method="POST" action="{% url 'add_to_cart' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="product_id" value={{product.id}}>
-                    <button class='btn_addtocart pp' type="submit"><img src="{{MEDIA_URL}}images/cart/prodcart2.png" class="fa icons pp" alt="Añadir al carrito"></button>
-                </form>
+                {% if product.category|stringformat:"s" == "Anillos" %} 
+                    <p>Talla:</p>
+                    <style>
+                    .sizeAdd.selected {
+                        color:green;
+                    }
+                    </style>
+                    <button class= 'sizeAdd' value="10" type="submit">10</button> 
+                    <button class= 'sizeAdd' value="12" type="submit">12</button> 
+                    <button class= 'sizeAdd' value="14" type="submit">14</button> 
+                    <button class= 'sizeAdd' value="16" type="submit">16</button>
+                    <br><br>
+                    <a target="_blank" href="{% static 'files/cuidado.pdf' %}"><strong>Cuidados</strong></a> |
+                    <a target="_blank" href="{% static 'files/tallas.pdf' %}"><strong>Guia de tallas</strong></a><br>
+                        <!--  -->
+                        <form class='form_addtocart' method="POST" action="{% url 'add_to_cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_size" id="product_size" value="">
+                            <input type="hidden" name="product_id" value={{product.id}}>
+                            <button class='btn_addtocart pp sizeAction' type="submit"><img src="{{MEDIA_URL}}images/cart/prodcart2.png" class="fa icons pp" alt="Añadir al carrito"></button>
+                        </form>
+                        <!--   -->
+                {% else %}
+                    <a target="_blank" href="{% static 'files/cuidado.pdf' %}"><strong>Cuidados</strong></a>
+                    <form class='form_addtocart' method="POST" action="{% url 'add_to_cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value={{product.id}}>
+                        <button class='btn_addtocart pp' type="submit"><img src="{{MEDIA_URL}}images/cart/prodcart2.png" class="fa icons pp" alt="Añadir al carrito"></button>
+                    </form>
+                {% endif %} 
             </div>
         </div>
 </div>
