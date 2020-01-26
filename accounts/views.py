@@ -23,7 +23,7 @@ def login(request):
                 auth.login(request, user)
                 return redirect("/")
             else:
-                login_form.add_error(None, "Your username or password are incorrect")
+                login_form.add_error(None, "Tu nombre de usuario (email) y/o contraseña no son correctos :(")
     else:
         login_form = UserLoginForm()
 
@@ -43,12 +43,12 @@ def register(request):
                 auth.login(request, user)
                 return redirect("/")
             else:
-                registration_form.add_error(None, "Can't log in now, try later.")
+                registration_form.add_error(None, "Login bloqueado, porfavor intentalo más tarde, lo sentimos :(")
     else:
         registration_form = UserRegistrationForm()
     
     
-    return render(request, 'accounts/register.html', {'form': registration_form})
+    return render(request, 'accounts/register.html', {'form': registration_form}),
     
 def logout(request):
     auth.logout(request)
