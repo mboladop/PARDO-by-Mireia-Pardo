@@ -16,10 +16,9 @@ from django.conf import settings
 def checkout(request):
     if request.method=="POST":
         order_form = OrderForm(request.POST)    
-        payment_form = MakePaymentForm(request.POST)
-        
-        if order_form.is_valid() and payment_form.is_valid():
+        if order_form.is_valid() and request.POST['stripe_id']:
             # Save The Order
+            # añadir cargar user id si lo hay
             order = order_form.save(commit=False)
             order.date = timezone.now()
             order.save()
@@ -31,25 +30,30 @@ def checkout(request):
             # Charge the Card
             items_and_total = get_cart_items_and_total(cart)
             total = items_and_total['total']
-            stripe_token=payment_form.cleaned_data['stripe_id']
+            stripe_token=request.POST['stripe_id']
 
             try:
                 customer = charge_card(stripe_token, total)
             except stripe.error.CardError:
                 messages.warning(request, "¡Pago no completado!")
 
-            if customer.paid:
+            if customer['paid']:
                 messages.success(request, "¡Pago realizado correctamente!")
 
                 # Send Email
-                send_confirmation_email(request.user.email, request.user, items_and_total)
-                send_confirmation_email('pardobymireia@gmail.com', request.user, items_and_total)
+                send_confirmation_email(request.POST['email'], request.POST['full_name'], items_and_total)
+                send_confirmation_email('pardobymireia@gmail.com', request.POST['full_name'], items_and_total)
         
                 #Clear the Cart
                 del request.session['cart']
                 return redirect("home")
     else:
-        order_form = OrderForm()
+        # Si esta registrado pre rellenar
+        if request.user.id:
+            data = {'email': request.user.email, 'full_name': 'CXXX'}
+        else:
+            data= {}
+        order_form = OrderForm(data)
         payment_form = MakePaymentForm()
         context = {'order_form': order_form, 'payment_form': payment_form, 'publishable': settings.STRIPE_PUBLISHABLE }
         cart = request.session.get('cart', {})
