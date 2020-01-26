@@ -1,7 +1,10 @@
 from django.shortcuts import get_object_or_404
 from products.models import Product
+from .forms import OrderForm
+import requests 
 from .models import *
 import stripe
+from cart import *
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
@@ -9,12 +12,14 @@ from django.core.mail import send_mail
 stripe.api_key = settings.STRIPE_SECRET
 
 def save_order_items(order, cart):
-    for id, quantity in cart.items():
-        product = get_object_or_404(Product, pk=id)
+    for item in cart:
+        product = get_object_or_404(Product, pk=item['product'])
+        # define size
         order_line_item = OrderLineItem(
             order = order,
             product = product,
-            quantity = quantity
+            # size = item['size'],
+            quantity = item['total']
             )
         order_line_item.save()
         
@@ -41,7 +46,11 @@ def send_confirmation_email(email, username, items_and_total):
     from_email = settings.SYSTEM_EMAIL
     to_email = [email]
     
-    send_mail(subject,message,from_email,to_email,fail_silently=True,html_message=html_message)
+        
+    
+    # send_mail(subject,message,from_email,to_email,fail_silently=False,html_message=html_message)
+    requests.post("https://api.mailgun.net/v3/sandboxc9e94be3f59843eabeb382f76eb9faf7.mailgun.org/messages",auth=("api", "5ac1621fbea4f2ff722c0a2068a3334d-16ffd509-88d58809"), 
+    data={"from": "Pardo by Mireia Pardo <pardobymireia@gmail.com>","to": to_email,"subject": subject,"text": message})
     
     
     
